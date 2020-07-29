@@ -15,6 +15,7 @@
    * [Table of contents](#table-of-contents)
    * [Introduction](#introduction)
    * [How it works](#how-it-works)
+   * [Requirements](#requirements)
    * [Installation](#installation)
    * [Code Sample](#code-sample)
    * [Tests](#tests)
@@ -47,8 +48,7 @@ The pixel sequencing for RNN unit is developed according to Li et. al. (2019); "
 directions (i.e., up, down, left and right). We take data translation to the left as an example (similarly for 
 other directions). Denoting ℎ𝑖,𝑗 as the feature at pixel (i, j), we repeat the following operation n times. 
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cvec%7Bh%7D_%7Bij%7D%3Df%28%5Cvec%7Bh%7D_%7Bi-1%2Cj%7D%2C%5Cvec%7Bh%7D_%7Bi%2Cj-1%7D%2C%20%5Cvec%7Bh%7D_%7Bi-1%2Cj-1%7D%2C%20%5Cvec%7Bs%7D_%7Bij%7D%29)
-![equation](images/equation.PNG)
+![equation](images/plain_rnn_equation.PNG)
 
 where n is the pixel sequence length parameter and 𝑊ℎ left is the weight parameter in recurrent translation layer 
 for the left direction." Figure below further illustrates the data transition where each entry has access to n previous 
@@ -67,14 +67,25 @@ channels of the 2D-image. Therefore, with an input image of (Batch=1, Height, Wi
 will be (Batch=1, Height, Width, Channels) or (Batch=1, Height, Width, Channels * 4) should the direction parameter 
 is set to either {"left", "right", "up", "down"}; or "all".    
 
-It's worth mentioning that The current implementation only works for 2D images and training batch size of 1. The input 2D image is recommended to 
-be square as sufficient testing with non-square input images has not been done.
+It's worth mentioning that The current implementation only works for 2D images and training batch size of 1. 
+The input 2D image is recommended to 
+be square as sufficient testing with non-square input images has not been done. When using this layer as the first layer,
+preceded it with an Keras "Input" layer. Should be used with `data_format="channels_last"`.
 
+
+# Requirements
+  * Python 3.7
+  * Python packages: numpy, Keras>=2.3 & Tensorflow>=2.1.0
+  * For installing Tensorflow-gpu (highly recommended) please see [Rensorflow Webpage](https://www.tensorflow.org/).
+  
+  If planning to run on virtual env, Anaconda3 "environment.yml" is included.   
+  * Create the environment: conda env create -f environment.yml
+  * Activate the environment: conda activate tfmd_py3.7_tf2 
 
 # Installation
 1. Clone the repository.
-2. Install the requirements by running pip install -r requirements.txt
-3. To test the code, run the test script.
+2. Install the requirements: pip install -r requirements.txt
+3. To test the code, run the test script (Test cases to be added in future).
 4. Import the 2D Spatial RNN layer and incorporate it in your main network. 
 
 # Code Sample
@@ -82,7 +93,8 @@ be square as sufficient testing with non-square input images has not been done.
 # importing required packages as well as spatial rnn layer 
 import numpy as np
 import tensorflow as tf
-from Conv_advance import Conv2DSpatial
+from spatial_rnn_2D import Conv2DSpatial
+
 image = np.array(range(0, 25)).reshape([1, 5, 5, 1])
 image = np.concatenate((image, image + 25), axis=-1) # input image shape (1,5,5,2)
 
@@ -94,7 +106,7 @@ model = tf.keras.Model(inputs=x_in, outputs=y_out)
 model.summary()
 
 a = model.predict(image)
-print("Output tensor shape is %s" %str(a.shape))
+print("Output tensor shape is %s" %str(a.shape))  # Output tensor shape is (1,5,5,8) 
 ```
 
 # Tests

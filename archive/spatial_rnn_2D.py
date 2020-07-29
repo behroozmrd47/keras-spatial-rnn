@@ -6,17 +6,46 @@ import tensorflow.keras.backend as K
 from collections import OrderedDict
 
 
-class Conv2DSpatial(tf.keras.layers.Layer):
-    """
+class SpatialRNN2D(tf.keras.layers.Layer):
 
-    """
 
     def __init__(self, rnn_radius, direction='all'):
         """
+        Class for Spatial RNN layer capable of learning spatial connections between pixels of an 2D image in an RNN fashion
+        along all four directions of up, downs,left and right. The RNN unit is plain RNN with ReLu activation function
+        instead of tanh as suggested by Li et. al. (2019). Implemented in tensorflow 2.0 with Keras API.
+        If `direction` is 'all', the spatial connections will be anlaysed in all principal directions of "left",
+        "right", "up", "down". If `direction` is only one of the principal direction ("left", "right", "up", "down"),
+        spatial connections will only be annalysed in the defined direction. It's worth mentioning that The current
+        implementation only works for 2D images and training batch size of 1. The input 2D image is recommended to
+        be square as sufficient testing with non-square input images has not been done. When using this layer as the
+        first layer, preceded it with an Keras "Input" layer. Should be used with `data_format="channels_last"`.
 
-        :param rnn_radius:
-        :param direction:
-        """
+        Examples:
+        The inputs are 5x5 RGB images with `channels_last` and the batch of 1
+        input_shape = (1, 5, 5, 3)
+        x_in = tf.keras.layers.Input((5, 5, 3))
+        spatial_rnn = Conv2DSpatial(rnn_radius=4, direction='left')
+        y_out = spatial_rnn(x_in)  # output shape of (1, 5, 5, 3)
+
+        Examples:
+        The inputs are 5x5 RGB images with `channels_last` and the batch of 1
+        input_shape = (1, 5, 5, 3)
+        x_in = tf.keras.layers.Input((5, 5, 3))
+        spatial_rnn = Conv2DSpatial(rnn_radius=4, direction='all')
+        y_out = spatial_rnn(x_in)  # output shape of (1, 5, 5, 12)
+
+
+          Arguments:
+            rnn_radius: Integer, the length of pixels sequence to be analysed by RNN unit
+            direction='all': either "all" (default) or one of "left", "right", "up", "down"
+          Input shape:
+            4+D tensor with shape: `batch_shape + (rows, cols, channels)` if `data_format='channels_last'`.
+          Returns:
+            4+D tensor with shape: `batch_shape + (new_rows, new_cols, filters)` if `data_format='channels_last'`.
+          Raises:
+            Nothing at the moment. But shall be added.
+          """
         super().__init__()
         self.padding = "SAME"
         self.r = rnn_radius

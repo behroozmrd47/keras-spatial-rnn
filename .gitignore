@@ -1,25 +1,6 @@
-*.out
-*.mat
-*.npy
-*.pcl
-*.h5
-
-data/raw/**/*.mat
-data/processed/
-
-weights/**/*
-weights/*checkpoint.h5
-logs/**/*
-
 test/output/**/*
 !test/output/readme.txt
 
-**/archive
-!src/**/archive
-!src/archive
-
-
-**/.idea
 # Created by https://www.gitignore.io/api/linux,pycharm,windows,python
 # Edit at https://www.gitignore.io/?templates=linux,pycharm,windows,python
 
