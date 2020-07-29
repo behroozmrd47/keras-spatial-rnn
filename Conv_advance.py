@@ -3,12 +3,14 @@ import numpy as np
 from matplotlib import pyplot
 from keras.layers import *
 import tensorflow.keras.backend as K
+from collections import OrderedDict
 
 
 class Conv2DSpatial(tf.keras.layers.Layer):
     """
 
     """
+
     def __init__(self, rnn_radius, direction='all'):
         """
 
@@ -20,8 +22,8 @@ class Conv2DSpatial(tf.keras.layers.Layer):
         self.r = rnn_radius
         self.direction = direction.lower()
 
-        self.kernel_switch_dic = {'left': [[1, 0, 0]], 'right': [[0, 0, 1]], 'up': [[1], [0], [0]],
-                                  'down': [[0], [0], [1]]}
+        self.kernel_switch_dic = OrderedDict({'left': [[1, 0, 0]], 'right': [[0, 0, 1]], 'up': [[1], [0], [0]],
+                                              'down': [[0], [0], [1]]})
         if self.direction == 'all':
             self.kernel_switches = list(self.kernel_switch_dic.values())
         else:
@@ -54,7 +56,7 @@ class Conv2DSpatial(tf.keras.layers.Layer):
         :param input_tensor:
         :return:
         """
-        kernel = self.kernel_list[0]
+        # kernel = self.kernel_list[0]
         input_tensor = K.cast(tf.identity(input_tensor), tf.float32)
         result_tensors_list = []
         for ker in self.kernel_list:
