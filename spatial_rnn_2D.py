@@ -70,9 +70,13 @@ class SpatialRNN2D(tf.keras.layers.Layer):
         for kernel_switch in self.kernel_switches:
             kernel_switch = np.array(kernel_switch)
             self.hex_filter = self.get_kernel_switch(kernel_switch)
-            self.kernel_list.append(self.add_weight(
+            # self.kernel_list.append(self.add_weight(
+            #     shape=[kernel_switch.shape[0], kernel_switch.shape[1], self.num_channel, self.num_channel],
+            #     initializer="random_normal", trainable=True) * self.hex_filter)
+            self.kernel_list.append(tf.Variable(tf.random.normal(
                 shape=[kernel_switch.shape[0], kernel_switch.shape[1], self.num_channel, self.num_channel],
-                initializer="random_normal", trainable=True) * self.hex_filter)
+                stddev=1. / 7.), trainable=True) * self.hex_filter)
+            self.kernel_list[-1] = tf.ones_like(self.kernel_list[-1]) * self.hex_filter
             super().build(input_shape)
 
     def call(self, input_tensor, **kwargs):
