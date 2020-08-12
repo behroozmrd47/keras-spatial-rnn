@@ -1,4 +1,6 @@
 archive/*
+.idea/
+misc
 
 # Created by https://www.gitignore.io/api/linux,pycharm,windows,python
 # Edit at https://www.gitignore.io/?templates=linux,pycharm,windows,python

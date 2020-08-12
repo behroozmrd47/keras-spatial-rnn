@@ -27,8 +27,9 @@
 
 This repository aims to offer a spatial RNN network, implemented in tensorflow 2.0 with Keras API. The RNN element of 
 the network is a plain RNN unit developed for integrating local spatial context between pixels of a 2D image with 
-various channels. The network is developed to analyse the spatial sequence in all four principal  directions of uo, 
-down, right or left, separately, aor all four together. The The length and direction of pixel sequence fed to RNN unit are 
+various channels. The network is developed to analyse the spatial sequence in all four principal directions of up, 
+down, right or left, separately, or all four directions together. The length and direction of pixel sequence fed to RNN 
+unit are 
 dynamic parameters. This technique of image analysis is claimed to be able to "effectively learn multi-scale and 
 long-range spatial contexts to combat the challenges, such as the poor image quality, low contrast, boundary ambiguity, 
 and complex anatomy shapes." (Li et. al., 2019)
@@ -93,14 +94,14 @@ preceded it with an Keras "Input" layer. Should be used with `data_format="chann
 # importing required packages as well as spatial rnn layer 
 import numpy as np
 import tensorflow as tf
-from spatial_rnn_2D import Conv2DSpatial
+from spatial_rnn_2D import SpatialRNN2D
 
 image = np.array(range(0, 25)).reshape([1, 5, 5, 1])
 image = np.concatenate((image, image + 25), axis=-1) # input image shape (1,5,5,2)
 
 tf.keras.backend.clear_session()
 x_in = tf.keras.layers.Input((5, 5, image.shape[-1]))
-spatial_rnn = Conv2DSpatial(rnn_radius=4, direction='all') 
+spatial_rnn = SpatialRNN2D(rnn_radius=4, direction='all') 
 y_out = spatial_rnn(x_in)
 model = tf.keras.Model(inputs=x_in, outputs=y_out)
 model.summary()
