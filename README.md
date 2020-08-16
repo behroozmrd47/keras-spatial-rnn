@@ -8,7 +8,7 @@
   * The length of sequence of inputs is a dynamic parameter which is the number of cell chain fed to RNN Module. 
   * The RNN unit is plain RNN with ReLu activation function instead of tanh as suggested by Li et. al. (2019).  
   * The spatial connections will be learned and analysed along all four principal directions sweeping to right, left, 
-  down, up. 
+  down, up, in that order. 
 
 # Table of contents
 
@@ -67,7 +67,8 @@ is recommended to that the sequence length should be less than image edge size.
 
 The output image will have same height and width as the input image and the output number of channels will be 4 times 
 the input number of channels. Therefore, with an input image of (Batch, Height, Width, Channels),the output  
-will be (Batch, Height, Width, Channels * 4).    
+will be (Batch, Height, Width, Channels * 4). The ordering of the output channels will be sweeping left-to-right,
+right to left, up-to-down and down-to-up. 
 
 It's worth mentioning that The current implementation only works for 2D images and training batch size of 1. 
 The input 2D image is recommended to 
@@ -78,7 +79,7 @@ preceded it with an Keras "Input" layer. Should be used with `data_format="chann
 # Requirements
   * Python 3.7
   * Python packages: numpy==1.19.0, Keras==2.4.3 & Tensorflow==2.2.0
-  * For installing Tensorflow-gpu (highly recommended) please see [Rensorflow Webpage](https://www.tensorflow.org/).
+  * For installing Tensorflow-gpu (highly recommended) please see [Tensorflow](https://www.tensorflow.org/).
   
   If planning to run on virtual env, Anaconda3 "environment.yml" is included.   
   * Create the environment: conda env create -f environment.yml
