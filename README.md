@@ -52,7 +52,7 @@ The pixel sequencing for RNN unit is developed according to Li et. al. (2019); "
 directions (i.e., up, down, left and right). We take data translation to the left to right as an example (similarly for 
 other directions). Denoting ℎ𝑖,𝑗 as the feature at pixel (i, j), we repeat the following operation n times. 
 
-![equation](images/plain_rnn_equation.PNG)
+![equation](images/plain_rnn_eq.PNG)
 
 where n is the pixel sequence length parameter and 𝑊ℎ left is the weight parameter in recurrent translation layer 
 for the left-to-right direction." Figure below further illustrates the data transition where each entry has access to 
