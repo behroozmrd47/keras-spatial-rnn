@@ -1,12 +1,9 @@
 """
-Test script for Bone_extraction Module Feb 29 2020
-@author: Behrooz Bajestani
+@author: Behrooz Bajestani (behrooz.mrd47@gmail.com)
 """
 import numpy as np
 import unittest
-from scipy.io import loadmat
 from Spatial_RNN_2D import SpatialRNN2D
-from keras.optimizers import *
 import tensorflow.keras.backend as K
 import tensorflow as tf
 
@@ -30,7 +27,7 @@ class TestBoneExtraction(unittest.TestCase):
                                          [26., 30., 24., 14.],
                                          [42., 16., 30., 16.]]]])
 
-    def test_forward_pass_one_sample_one_ch(self):
+    def test_forward_pass_one_ch(self):
         """
         Test forward pass for one image sample with size of (3*3*1). The layer kernel is initialized as ones so the
         result array would be sum of two indices to left, right, down and up.
@@ -39,32 +36,57 @@ class TestBoneExtraction(unittest.TestCase):
 
         K.clear_session()
         x_in = tf.keras.layers.Input(TestBoneExtraction.image1_1D.shape[1:])
-        y_out = SpatialRNN2D(rnn_seq_length=2, kernel_initializer='ones')(x_in)
+        y_out = SpatialRNN2D(rnn_seq_length=2, kernel_initializer='ones', merge_mode='concat')(x_in)
         model = tf.keras.Model(inputs=x_in, outputs=y_out)
         test_img1_output = model.predict(TestBoneExtraction.image1_1D)
         self.assertTrue(np.array_equal(TestBoneExtraction.sample_image1_1D_label, test_img1_output))
 
-    def test_forward_pass_one_sample_multi_ch(self):
+    def test_forward_pass_multi_ch_concat(self):
         """
         Test forward pass for one image sample with size of (3*3*2). The layer kernel is initialized to ones for both
         channels.
         :return: None
         """
 
-        sample_spatial_rnn_label = np.array([[[[0., 20., 80., 100., 0., 20., 120., 140.],
-                                               [22., 42., 30., 50., 2., 22., 134., 154.],
-                                               [68., 88., 4., 24., 4., 24., 148., 168.]],
-                                              [[6., 26., 122., 142., 26., 46., 50., 70.],
-                                               [40., 60., 48., 68., 32., 52., 56., 76.],
-                                               [110., 130., 10., 30., 38., 58., 62., 82.]],
-                                              [[12., 32., 164., 184., 84., 104., 12., 32.],
-                                               [58., 78., 66., 86., 98., 118., 14., 34.],
-                                               [152., 172., 16., 36., 112., 132., 16., 36.]]]])
+        sample_spatial_rnn_label = np.array([[[[0., 20., 6., 66., 0., 20., 18., 78.],
+                                               [2., 42., 6., 46., 2., 22., 24., 84.],
+                                               [6., 66., 4., 24., 4., 24., 30., 90.]],
+                                              [[6., 26., 24., 84., 6., 46., 18., 58.],
+                                               [14., 54., 18., 58., 10., 50., 22., 62.],
+                                               [24., 84., 10., 30., 14., 54., 26., 66.]],
+                                              [[12., 32., 42., 102., 18., 78., 12., 32.],
+                                               [26., 66., 30., 70., 24., 84., 14., 34.],
+                                               [42., 102., 16., 36., 30., 90., 16., 36.]]]])
 
         image1_2d = np.concatenate((TestBoneExtraction.image1_1D, TestBoneExtraction.image1_1D + 20), axis=-1)
         K.clear_session()
         x_in = tf.keras.layers.Input(image1_2d.shape[1:])
-        y_out = SpatialRNN2D(rnn_seq_length=3, kernel_initializer='ones')(x_in)
+        y_out = SpatialRNN2D(rnn_seq_length=3, kernel_initializer='ones', merge_mode='concat')(x_in)
+        model = tf.keras.Model(inputs=x_in, outputs=y_out)
+        test_img1_output_ch2 = model.predict(image1_2d)
+        self.assertTrue(np.array_equal(sample_spatial_rnn_label, test_img1_output_ch2))
+
+    def test_forward_pass_multi_ch_conv(self):
+        """
+        Test forward pass for one image sample with size of (3*3*2). The layer kernel is initialized to ones for both
+        channels.
+        :return: None
+        """
+        sample_spatial_rnn_label = np.array([[[[208.],
+                                               [228.],
+                                               [248.]],
+                                              [[268.],
+                                               [288.],
+                                               [308.]],
+                                              [[328.],
+                                               [348.],
+                                               [368.]]]])
+
+        image1_2d = np.concatenate((TestBoneExtraction.image1_1D, TestBoneExtraction.image1_1D + 20), axis=-1)
+        K.clear_session()
+        x_in = tf.keras.layers.Input(image1_2d.shape[1:])
+        y_out = SpatialRNN2D(rnn_seq_length=3, kernel_initializer='ones', merge_mode='convolution',
+                             output_conv_filter=1)(x_in)
         model = tf.keras.Model(inputs=x_in, outputs=y_out)
         test_img1_output_ch2 = model.predict(image1_2d)
         self.assertTrue(np.array_equal(sample_spatial_rnn_label, test_img1_output_ch2))
@@ -91,7 +113,6 @@ class TestBoneExtraction(unittest.TestCase):
         Test forward pass for dataset of two images with size of (3*3*1). The layer kernel is initialized to ones.
         :return: None
         """
-
         sample_img_dataset_output_label = np.array([[[[0., 6., 0., 18.],
                                                       [2., 6., 2., 24.],
                                                       [6., 4., 4., 30.]],
@@ -112,7 +133,7 @@ class TestBoneExtraction(unittest.TestCase):
                                                       [342., 116., 330., 116.]]]])
 
         K.clear_session()
-        x_in = tf.keras.layers.Input((3, 3, 1))
+        x_in = tf.keras.layers.Input(TestBoneExtraction.image_dataset_1D.shape[1:])
         y_out = SpatialRNN2D(rnn_seq_length=2, kernel_initializer='ones')(x_in)
         model = tf.keras.Model(inputs=x_in, outputs=y_out)
         test_img_dataset_output = model.predict(TestBoneExtraction.image_dataset_1D)
