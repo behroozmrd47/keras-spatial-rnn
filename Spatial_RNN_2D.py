@@ -12,7 +12,7 @@ import warnings
 
 class SpatialRNN2D(tf.keras.layers.Layer):
     def __init__(self, rnn_seq_length, activation='relu', kernel_initializer='random_uniform', merge_mode='concat',
-                 output_conv_filter=None):
+                 output_conv_filter=None, **kwargs):
         """
         Class for Spatial RNN layer capable of learning spatial connections between pixels of an 2D image in an RNN
         fashion along all four directions of up, downs,left and right. Implemented in tensorflow 2.0 with Keras API.
@@ -49,7 +49,7 @@ class SpatialRNN2D(tf.keras.layers.Layer):
         :param output_conv_filter: number of output channels in case 'convolution' merge mode is selected.
         """
 
-        super().__init__()
+        super().__init__(**kwargs)
         self.padding = "same"
         if merge_mode not in ['concat', 'convolution']:
             raise ValueError('Unknown merge mode: the merge mode argument can be either \'concat\' or \'convolution\'.')
